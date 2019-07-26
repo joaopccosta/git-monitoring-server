@@ -2,7 +2,7 @@ import json
 import re
 
 from src.Commit import Commit
-from src.Constants import *
+import Constants
 
 GIT_LOG_REGEX = "([a-z,A-Z,0-9]+)\s-\s([a-z,A-Z,\s]+),\s([a-z,A-Z,0-9,\s,\:]+)\s.*:\s(.*)"
 
@@ -34,12 +34,12 @@ class Project:
 
     def toJson(self):
         data = {}
-        data[NAME_TAG] = self.name
-        data[URL_TAG] = self.url
-        data[COMMITS_TAG] = []
+        data[Constants.NAME_TAG] = self.name
+        data[Constants.URL_TAG] = self.url
+        data[Constants.COMMITS_TAG] = []
 
         for commit in self.commits.values():
-            data[COMMITS_TAG].append(commit.toJson())
+            data[Constants.COMMITS_TAG].append(commit.toJson())
 
         return json.dumps(data)
 
