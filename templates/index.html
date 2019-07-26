@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <title>Git Log</title>
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <style>
+        body    { padding-top:50px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <h1 class="logo">Git Log</h1>
+      </div>
+      </header>
+    <div class="container">
+      {% block content %}
+      {% endblock %}
+      <div>
+        <p>Favicon made by <a href="https://www.flaticon.com/authors/daniel-bruce" title="Daniel Bruce">Daniel Bruce</a> from <a href="https://www.flaticon.com/"                 title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/"                 title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></p>
+      </div>
+    </div>
+
+  </body>
+</html>
+

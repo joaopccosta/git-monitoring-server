@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, abort
+from flask import Flask, request, render_template
 from src.GitCLI import GitCLI
 from src.Project import Project
 
@@ -20,12 +20,18 @@ def addProject(name):
 
 @app.route("/list/<name>")
 def listProject(name):
-    return "200"
+    if name not in projects:
+        return render_template('error.html', projectname=name)
+    else:
+        return render_template('commits.html', projectname=name, commits=projects[name].commits.values())
 
 
 @app.route("/json/<name>")
 def listProjectAsJson(name):
-    return "200"
+    if name not in projects:
+        return render_template('error.html', projectname=name)
+    else:
+        return render_template('json.html', projectname=name, json=projects[name].toJson())
 
 if __name__ == "__main__":
     app.run()
