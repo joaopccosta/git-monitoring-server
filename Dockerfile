@@ -1,1 +1,1 @@
-ECHO "hello docker!"
+RUN echo "hello docker!"
