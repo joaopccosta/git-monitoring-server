@@ -22,7 +22,6 @@ class Project:
         if rawCommits:
             for commitInformation in rawCommits:
                 splitCommitInfo = re.compile(GIT_LOG_REGEX).split(commitInformation)
-
                 hash = splitCommitInfo[1]
                 author = splitCommitInfo[2]
                 date = splitCommitInfo[3]

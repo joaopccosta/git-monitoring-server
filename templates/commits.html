@@ -1,0 +1,9 @@
+{% extends 'index.html' %}
+{% block content %}
+    <h4 class="logo">Git log for {{projectname}}</h4>
+    {% for commit in commits %}
+        <div class="alert alert-info" role="alert">
+            <p><b>{{commit['hash']}}</b> - <i>{{commit['author']}} {{commit['date']}} </i>- {{commit['message']}}</p>
+        </div>
+    {% endfor %}
+{% endblock %}
