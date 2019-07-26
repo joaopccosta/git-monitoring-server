@@ -1,5 +1,6 @@
 import json
 
+
 class Commit:
 
     def __init__(self, hash, author, date, message):

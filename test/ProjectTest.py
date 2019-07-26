@@ -1,10 +1,9 @@
-import unittest
 import json
+import unittest
 
 from mock import Mock
 
 from src.Project import Project
-
 
 FAKE_PROJECT_NAME = "fakeProject"
 FAKE_PROJECT_URL = "fake/project/url.git"
@@ -15,6 +14,7 @@ FAKE_PROJECT_JSON = {"name": "fakeProject", "url": "fake/project/url.git", "comm
     {"hash": "c34c2ac", "author": "Joao", "date": "Sat May 25 11:04:54 2019", "message": "git ignore added"},
     {"hash": "db93f9e", "author": "Joao", "date": "Sat May 25 11:03:35 2019",
      "message": "Initial commit. Unit tests."}]}
+
 
 class ProjectTest(unittest.TestCase):
 
@@ -44,6 +44,7 @@ class ProjectTest(unittest.TestCase):
         project.fetchCommits()
         expectedJson = json.dumps(FAKE_PROJECT_JSON)
         self.assertEqual(project.toJson(), expectedJson)
+
 
 if __name__ == "__main__":
     unittest.main()
