@@ -1,15 +1,16 @@
 import subprocess
 import sys
 
-from src.Constants import *
+import Constants
+
 
 class CodacyCLI:
     def fetchCommits(self, url):
         name = self.getProjectNameFromURL(url)
-        subprocess.run(GIT_CLONE_COMMMAND+[url])
-        output = subprocess.run (GIT_LOG_COMMAND, stdout=subprocess.PIPE, cwd=f"./{name}")
-        gitLogRestuls = str(output.stdout.decode(UTF_ENCONDING)).replace("\"", "").split("\n")
-        subprocess.run(RM_FOLDER_COMMAND+[name])
+        subprocess.run(Constants.GIT_CLONE_COMMMAND+[url])
+        output = subprocess.run (Constants.GIT_LOG_COMMAND, stdout=subprocess.PIPE, cwd=f"./{name}")
+        gitLogRestuls = str(output.stdout.decode(Constants.UTF_ENCONDING)).replace("\"", "").split("\n")
+        subprocess.run(Constants.RM_FOLDER_COMMAND+[name])
 
         print(f"{gitLogRestuls}")
         return gitLogRestuls
