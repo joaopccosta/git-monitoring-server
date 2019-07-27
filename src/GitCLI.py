@@ -18,9 +18,8 @@ class GitCLI:
         return gitLogRestuls
 
     def getProjectNameFromURL(self, url):
-        name = str(url).split("/")[1].split(".")[0]
+        name = str(url).rsplit("/",1)[1].split(".")[0]
         return name
-
 
 if __name__ == '__main__':
     gitCLI = GitCLI()
