@@ -1,10 +1,14 @@
-from flask import Flask, request, render_template
+import prometheus_client
+from flask import Flask, Response, request, render_template
 from src.GitCLI import GitCLI
 from src.Project import Project
+from src.helpers.PrometheusMetrics import setupMetrics
 
+CONTENT_TYPE_LATEST = str('text/plain; version=0.0.4; charset=utf-8')
 app = Flask(__name__)
 gitCLI = GitCLI()
 projects = {}
+
 @app.route("/")
 def index():
     return render_template('index.html')
@@ -33,5 +37,22 @@ def listProjectAsJson(name):
     else:
         return render_template('json.html', projectname=name, json=projects[name].toJson())
 
+@app.route('/metrics/')
+def metrics():
+    return Response(prometheus_client.generate_latest(), mimetype=CONTENT_TYPE_LATEST)
+
+@app.errorhandler(500)
+def handle_500(error):
+    return str(error), 500
+
+@app.errorhandler(400)
+def handle_400(error):
+    return str(error), 400
+
+@app.errorhandler(404)
+def handle_404(error):
+    return str(error), 404
+
 if __name__ == "__main__":
+    setupMetrics(app)
     app.run(host="0.0.0.0")
