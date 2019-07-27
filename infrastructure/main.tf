@@ -60,10 +60,6 @@ resource "docker_container" "webserver" {
   }
 }
 
-resource "docker_network" "private_network" {
-  name = "private_subnet"
-}
-
 resource "docker_image" "prometheus" {
   name = "prom/prometheus:latest"
 }
@@ -103,5 +99,6 @@ resource "grafana_data_source" "prometheus" {
 }
 
 resource "grafana_dashboard" "metrics1" {
-  config_json = replace(data.local_file.prometheus-dashboard-1.content, "server-ip", docker_container.webserver.ip_address)
+//  config_json = replace(data.local_file.prometheus-dashboard-1.content, "server-ip", docker_container.webserver.ip_address)
+  config_json = data.local_file.prometheus-dashboard-1.content
 }
