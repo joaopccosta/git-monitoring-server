@@ -34,4 +34,4 @@ def listProjectAsJson(name):
         return render_template('json.html', projectname=name, json=projects[name].toJson())
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0")
