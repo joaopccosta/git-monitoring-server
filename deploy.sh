@@ -9,6 +9,12 @@ fi
 
 #docker network prune -f
 cd infrastructure
-terraform init
+if [[ $(ls .terraform) ]]; then
+    echo ".terraform folder found. No need to run 'terraform init'"
+else
+    terraform init
+fi
+
+
 terraform apply --auto-approve
 cd ..
