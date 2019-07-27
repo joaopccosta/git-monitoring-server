@@ -1,13 +1,13 @@
 import json
 import re
-
+import sys
 from src.Commit import Commit
 
 UTF_ENCONDING = "utf-8"
 NAME_TAG = 'name'
 URL_TAG = 'url'
 COMMITS_TAG = 'commits'
-GIT_LOG_REGEX = "([a-z,A-Z,0-9]+)\s-\s([A-zÀ-ú,0-9,\s,\.-]+),\s([a-z,A-Z,0-9,\s,\:]+)\s.*:\s(.*)"
+GIT_LOG_REGEX = "(.+)\s-\s(.+),\s(.+)\s.*:\s(.+)"
 
 class Project:
     def __init__(self, gitService, name, url):
@@ -18,18 +18,20 @@ class Project:
 
     def fetchCommits(self):
         try:
-            i = 0
+            commitNumber = 0
             rawCommits = self.gitService.fetchCommits(self.url)
             if rawCommits:
                 for commitInformation in rawCommits:
-                    i += 1
+                    commitNumber += 1
                     splitCommitInfo = list(filter(None, re.compile(GIT_LOG_REGEX).split(commitInformation)))
                     hash = splitCommitInfo[0]
                     author = splitCommitInfo[1]
                     date = splitCommitInfo[2]
                     message = splitCommitInfo[3]
                     self.addCommit(hash, author, date, message)
-
+        except IndexError as indexOutOfRangeException:
+            sys.stderr.write(f"REGEX PROBLEM FOR {splitCommitInfo} in index {commitNumber}")
+            raise indexOutOfRangeException
         except Exception as exception:
             raise exception
 

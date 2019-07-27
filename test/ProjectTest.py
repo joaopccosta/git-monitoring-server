@@ -10,8 +10,10 @@ FAKE_PROJECT_URL = "fake/project/url.git"
 FAKE_COMMIT_DATA = ["c34c2ac - Joao, Sat May 25 11:04:54 2019 +0100 : git ignore added",
                     "db93f9e - Joao, Sat May 25 11:03:35 2019 +0100 : Initial commit. Unit tests."
                     ]
+FAKE_COMMIT_DATA_NON_UTF_CHARACTERS = ['8ecbb67b3b - 朱夷, Mon Jul 15 09:35:56 2019 -0500 : [SPARK-28311][SQL] Fix STS OpenSession failed return wrong origin PROTOCOL_VERSION']
+
 FAKE_PROJECT_JSON = {"name": "fakeProject", "url": "fake/project/url.git", "commits": [
-    {"hash": "c34c2ac", "author": "Joao", "date": "Sat May 25 11:04:54 2019", "message": "git ignore added"},
+    {"hash": "c34c2ac", "author": "Joo", "date": "Sat May 25 11:04:54 2019", "message": "git ignore added"},
     {"hash": "db93f9e", "author": "Joao", "date": "Sat May 25 11:03:35 2019",
      "message": "Initial commit. Unit tests."}]}
 
@@ -28,6 +30,15 @@ class ProjectTest(unittest.TestCase):
         project = Project(mockCodacyCLI, FAKE_PROJECT_NAME, FAKE_PROJECT_URL)
         project.addCommit("c34c2ac", "Joao", "Sat May 25 11:04:54 2019", "git ignore added")
         self.assertEqual(len(project.commits), 1)
+
+    def test_givenAProject_whenFetchingCommitWithNonStandardCharacters_commitIsAccepted(self):
+        mockCodacyCLI = Mock()
+        mockCodacyCLI.fetchCommits.return_value = FAKE_COMMIT_DATA_NON_UTF_CHARACTERS
+        project = Project(mockCodacyCLI, FAKE_PROJECT_NAME, FAKE_PROJECT_URL)
+        project.fetchCommits()
+        mockCodacyCLI.fetchCommits.assert_called_once()
+        self.assertEqual(len(project.commits), 1)
+
 
     def test_givenAProject_whenFetchIsInvoked_internalListOfCommitsIsNotEmpty(self):
         mockCodacyCLI = Mock()
