@@ -7,7 +7,7 @@ UTF_ENCONDING = "utf-8"
 NAME_TAG = 'name'
 URL_TAG = 'url'
 COMMITS_TAG = 'commits'
-GIT_LOG_REGEX = "([a-z,A-Z,0-9]+)\s-\s([A-zÀ-ú,0-9,\s]+),\s([A-zÀ-ú,0-9,\s,\:]+)\s.*:\s(.*)"
+GIT_LOG_REGEX = "([a-z,A-Z,0-9]+)\s-\s([A-zÀ-ú,0-9,\s,\.-]+),\s([a-z,A-Z,0-9,\s,\:]+)\s.*:\s(.*)"
 
 class Project:
     def __init__(self, gitService, name, url):
