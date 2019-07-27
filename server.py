@@ -1,5 +1,5 @@
 import prometheus_client
-from flask import Flask, Response, request, render_template
+from flask import Flask, Response, request, render_template, abort
 from src.GitCLI import GitCLI
 from src.Project import Project
 from src.helpers.PrometheusMetrics import setupMetrics
@@ -15,12 +15,15 @@ def index():
 
 @app.route("/add/<name>", methods=['POST'])
 def addProject(name):
-    url = request.get_data().decode("utf-8")
-    print(f"Fetching {url}")
-    project = Project(gitCLI, name, url)
-    project.fetchCommits()
-    projects[name] = project
-    return "200"
+    try:
+        url = request.get_data().decode("utf-8")
+        print(f"Fetching {url}")
+        project = Project(gitCLI, name, url)
+        project.fetchCommits()
+        projects[name] = project
+        return "200"
+    except Exception as exception:
+        abort(500)
 
 @app.route("/list/<name>")
 def listProject(name):
@@ -37,7 +40,7 @@ def listProjectAsJson(name):
     else:
         return render_template('json.html', projectname=name, json=projects[name].toJson())
 
-@app.route('/metrics/')
+@app.route('/metrics')
 def metrics():
     return Response(prometheus_client.generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
