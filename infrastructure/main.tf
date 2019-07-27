@@ -25,15 +25,8 @@ data "local_file" "prometheus-yml" {
     filename = abspath("${path.module}/prometheus/prometheus.yml")
 }
 
-#TODO
-  provisioner "file" {
-    source      = "conf/myapp.conf"
-    destination = "/etc/myapp.conf"
-  }
-
-data "local_file" "prometheus-dashboard1" {
-    filename = abspath("${path.module}/prometheus/prometheus-dashboard.json")
-    content = replace(data.local_file.prometheus-dashboard1.content, "server-ip", docker_container.webserver.ip_address)
+data "local_file" "prometheus-dashboard-1" {
+    filename = abspath("${path.module}/prometheus/prometheus-dashboard-template1.json")
 }
 
 resource "docker_container" "prometheus" {
@@ -109,6 +102,6 @@ resource "grafana_data_source" "prometheus" {
   url = "http://${docker_container.prometheus.ip_address}:${var.prometheusport}/"
 }
 
-resource "grafana_dashboard" "metrics" {
-  config_json = file("${path.module}/prometheus/prometheus-dashboard.json")
+resource "grafana_dashboard" "metrics1" {
+  config_json = replace(data.local_file.prometheus-dashboard-1.content, "server-ip", docker_container.webserver.ip_address)
 }
