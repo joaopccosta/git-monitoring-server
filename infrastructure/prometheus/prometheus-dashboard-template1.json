@@ -55,31 +55,31 @@
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
-      "steppedLine": false,
+      "steppedLine": true,
       "targets": [
         {
-          "expr": "sum(rate(request_count_total{endpoint=~\"/add/.+\"}[1m]))",
+          "expr": "sum(request_count_total{endpoint=~\"/add/.+\"})",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
           "legendFormat": "/add",
-          "refId": "B"
+          "refId": "D"
         },
         {
-          "expr": "sum(rate(request_count_total{endpoint=~\"/list/.+\"}[1m]))",
+          "expr": "sum(request_count_total{endpoint=~\"/list/.+\"})",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
           "legendFormat": "/list",
-          "refId": "A"
+          "refId": "E"
         },
         {
-          "expr": "sum(rate(request_count_total{endpoint=~\"/json/.+\"}[1m]))",
+          "expr": "sum(request_count_total{endpoint=~\"/json/.+\"})",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
           "legendFormat": "/json",
-          "refId": "C"
+          "refId": "F"
         }
       ],
       "thresholds": [],
@@ -124,7 +124,9 @@
       }
     },
     {
-      "aliasColors": {},
+      "aliasColors": {
+        "json": "orange"
+      },
       "bars": false,
       "dashLength": 10,
       "dashes": false,
@@ -161,36 +163,51 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(request_latency_seconds_sum{endpoint!~\"/metrics|/static/.+\"}[1m])",
+          "expr": "sum(rate(request_latency_seconds_sum{endpoint!~\"/metrics|/static/.+\"}[5m]))/sum(rate(request_latency_seconds_count{endpoint!~\"/metrics|/static/.+\"}[5m]))",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
-          "legendFormat": "",
+          "legendFormat": "avg",
           "refId": "A"
         },
         {
-          "expr": "sum(rate(request_latency_seconds_bucket{le=\"0.25\"}[1m]))",
+          "expr": "rate(request_latency_seconds_sum{endpoint!~\"/metrics|/static/.+\"}[5m])",
           "format": "time_series",
           "hide": true,
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "B"
-        }
-      ],
-      "thresholds": [
+        },
         {
-          "colorMode": "critical",
-          "fill": true,
-          "line": true,
-          "op": "gt",
-          "value": 0.2,
-          "yaxis": "left"
+          "expr": "sum(rate(request_latency_seconds_sum{endpoint=~\"/add/.+\"}[5m]))/sum(rate(request_latency_seconds_count{endpoint=~\"/add/.+\"}[5m]))",
+          "format": "time_series",
+          "hide": false,
+          "intervalFactor": 1,
+          "legendFormat": "add",
+          "refId": "C"
+        },
+        {
+          "expr": "sum(rate(request_latency_seconds_sum{endpoint=~\"/list/.+\"}[5m]))/sum(rate(request_latency_seconds_count{endpoint=~\"/list/.+\"}[5m]))",
+          "format": "time_series",
+          "hide": false,
+          "intervalFactor": 1,
+          "legendFormat": "list",
+          "refId": "D"
+        },
+        {
+          "expr": "sum(rate(request_latency_seconds_sum{endpoint=~\"/json/.+\"}[5m]))/sum(rate(request_latency_seconds_count{endpoint=~\"/json/.+\"}[5m]))",
+          "format": "time_series",
+          "hide": false,
+          "intervalFactor": 1,
+          "legendFormat": "json",
+          "refId": "E"
         }
       ],
+      "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "request_latency",
+      "title": "average_request_duration",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -206,7 +223,7 @@
       },
       "yaxes": [
         {
-          "format": "none",
+          "format": "s",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -236,8 +253,8 @@
     "list": []
   },
   "time": {
-    "from": "now/d",
-    "to": "now/d"
+    "from": "now-3h",
+    "to": "now"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -266,6 +283,6 @@
   },
   "timezone": "",
   "title": "prometheus dashboard",
-  "uid": "RpdOVCNWz",
-  "version": 2
+  "uid": "UJ1L4CNZk",
+  "version": 6
 }
