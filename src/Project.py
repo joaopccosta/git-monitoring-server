@@ -7,7 +7,7 @@ UTF_ENCONDING = "utf-8"
 NAME_TAG = 'name'
 URL_TAG = 'url'
 COMMITS_TAG = 'commits'
-GIT_LOG_REGEX = "([a-z,A-Z,0-9]+)\s-\s([a-z,A-Z,\s]+),\s([a-z,A-Z,0-9,\s,\:]+)\s.*:\s(.*)"
+GIT_LOG_REGEX = "([a-z,A-Z,0-9]+)\s-\s([A-zÀ-ú,0-9,\s]+),\s([A-zÀ-ú,0-9,\s,\:]+)\s.*:\s(.*)"
 
 class Project:
     def __init__(self, gitService, name, url):
@@ -17,16 +17,21 @@ class Project:
         self.gitService = gitService
 
     def fetchCommits(self):
-        rawCommits = self.gitService.fetchCommits(self.url)
+        try:
+            i = 0
+            rawCommits = self.gitService.fetchCommits(self.url)
+            if rawCommits:
+                for commitInformation in rawCommits:
+                    i += 1
+                    splitCommitInfo = list(filter(None, re.compile(GIT_LOG_REGEX).split(commitInformation)))
+                    hash = splitCommitInfo[0]
+                    author = splitCommitInfo[1]
+                    date = splitCommitInfo[2]
+                    message = splitCommitInfo[3]
+                    self.addCommit(hash, author, date, message)
 
-        if rawCommits:
-            for commitInformation in rawCommits:
-                splitCommitInfo = re.compile(GIT_LOG_REGEX).split(commitInformation)
-                hash = splitCommitInfo[1]
-                author = splitCommitInfo[2]
-                date = splitCommitInfo[3]
-                message = splitCommitInfo[4]
-                self.addCommit(hash, author, date, message)
+        except Exception as exception:
+            raise exception
 
     def addCommit(self, hash, author, date, message):
         commit = Commit(hash, author, date, message)
