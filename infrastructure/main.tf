@@ -46,13 +46,13 @@ resource "docker_container" "webserver" {
   name = "server"
   ports {
     internal = var.serverport
-    external = 8888
+    external = var.serverport
   }
 }
 
-resource "docker_network" "private_network" {
-  name = "private_subnet"
-}
+//resource "docker_network" "private_network" {
+//  name = "private_subnet"
+//}
 
 resource "docker_image" "prometheus" {
   name = "prom/prometheus:latest"
@@ -67,12 +67,22 @@ resource "docker_image" "server" {
   keep_locally = true
 }
 
+
+output "grafana_address" {
+  value = "${docker_container.grafana.*.ip_address}"
+}
+
+
 output "prometheus_address" {
   value = "${docker_container.prometheus.*.ip_address}"
 }
 
+output "webserver_address" {
+  value = "${docker_container.webserver.*.ip_address}"
+}
+
 provider "grafana" {
-  url  = "http://${var.dockerhost_address}:${var.grafanaport}"
+  url  = "http://${docker_container.grafana.ip_address}:${var.grafanaport}"
   auth = "admin:admin"
 }
 
