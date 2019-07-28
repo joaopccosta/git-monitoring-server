@@ -1,6 +1,7 @@
 import time
 import subprocess
 import os
+import sys
 from random import seed
 from random import randint
 
@@ -14,7 +15,9 @@ operations.append([['curl', '-s', '-X', 'POST', 'http://127.0.0.1:5000/add/spark
 FNULL = open(os.devnull, 'w')
 seed(1)
 operationCount = 0
-while operationCount < 100:
+totalOperationsCount = int(sys.argv[1])
+print(f" Performing {totalOperationsCount} operations...")
+while operationCount < totalOperationsCount:
     randomRepository = operations[randint(0, len(operations) - 1)]
     randomOperation = randomRepository[randint(0, len(randomRepository)-1)]
     print(f"Running {randomOperation}")
