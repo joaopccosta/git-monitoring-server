@@ -104,7 +104,7 @@ This should install everything you need for [GitCLI.py]() and [server.py]() to w
 
 * [deploy.sh]() - Convenience script to start the entire infrastructure.
 * [teardown.sh]() - Convenience script to destroy the entire infrastructure.
-* [testSuite.sh]() - Collection of operations on the server to automatically populate some data into the `grafana` dashboards.
+* [testSuite.py]() - Scripted operations to run for 1 minute which will automatically populate some data into the `grafana` dashboards.
 </details>
 
 <details><summary>File tree</summary>
@@ -149,7 +149,7 @@ This should install everything you need for [GitCLI.py]() and [server.py]() to w
 ├── test
 │   ├── GitCLITest.py
 │   └── ProjectTest.py
-└── testSuite.sh
+└── testSuite.py
 ```
 </details>
 
@@ -276,11 +276,15 @@ As such, I do a text replacement on this file, replacing a `server-ip` token wit
 
 #### Test Suite
 
-I provide a `testSuite.sh` file that performs a series of operations on the web-server, just for convenience. It does not do anything clever.
+I provide a `testSuite.py` file that performs a series of operations on the web-server, just for convenience. It does not do anything clever.
 It uses three different repository URLs, with different commit list sizes:
 * joaopccosta/effective-bassoon - 2 commits
 * chrislgarry/Apollo-11 - 308 commits
 * apache/spark - 24,788 commits
+
+It runs 100 operations, waiting for [1s, 60s] between operations at random. The operations are random in terms of web server route (add|list|json), and in terms of repository (mentioned above).
+
+This was written so I could populate grafana in an automated way.
 
 ### Grafana
 
