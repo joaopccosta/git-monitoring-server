@@ -290,7 +290,7 @@
       "steppedLine": true,
       "targets": [
         {
-          "expr": "sum(request_count_total{endpoint=~\"/add/.+\", http_status!=\"200\"})",
+          "expr": "sum(request_count_total{endpoint=~\"/add/.+\", http_status=~\"400|404|500\"})",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -298,7 +298,7 @@
           "refId": "D"
         },
         {
-          "expr": "sum(request_count_total{endpoint=~\"/list/.+\", http_status!=\"200\"})",
+          "expr": "sum(request_count_total{endpoint=~\"/list/.+\", http_status=~\"400|404|500\"})",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -306,7 +306,7 @@
           "refId": "E"
         },
         {
-          "expr": "sum(request_count_total{endpoint=~\"/json/.+\", http_status!=\"200\"})",
+          "expr": "sum(request_count_total{endpoint=~\"/json/.+\", http_status=~\"400|404|500\"})",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -395,5 +395,5 @@
   "timezone": "",
   "title": "prometheus dashboard",
   "uid": "spvZXqNWz",
-  "version": 2
+  "version": 3
 }

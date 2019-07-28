@@ -321,11 +321,11 @@ Running ['curl', '-s', '-X', 'POST', 'http://127.0.0.1:5000/add/spark', '-d', 'h
 
 The following dashboard and panels are provisioned through `terraform` by passing `grafana-dashboard-template1.json` dashboard template mentioned above. 
 ![dashboards](static/grafana.png)
-The image does not do justice to visualising spikes in request latency.😇️
 
 I have composed the queries used thanks to the [Prometheus official documentation on Histograms](https://prometheus.io/docs/practices/histograms/). 
 
-The image on the left shows the count for each request endpoint (add|list|json), whereas  on the right we see the average request duration (latency) for each endpoint (add|list|json).
+The panel on the top left shows the count for each request endpoint *(add|list|json)* regardless of the *http_status* code, whereas on the bottom left we can see the count of failed requests.
+On the right we see the average request duration (latency) for each endpoint *(add|list|json)*.
 <details><summary>request_count queries</summary>
 
 ```
@@ -335,6 +335,17 @@ sum(request_count_total{endpoint=~"/json/.+"})
 ```
 
 </details>
+
+<details><summary>failed request_count queries</summary>
+
+```
+sum(request_count_total{endpoint=~"/add/.+", http_status=~"400|404|500"})
+sum(request_count_total{endpoint=~"/list/.+", http_status=~"400|404|500"})
+sum(request_count_total{endpoint=~"/json/.+", http_status=~"400|404|500"})
+```
+
+</details>
+
 <details><summary>request_latency queries</summary>
 
 ```
