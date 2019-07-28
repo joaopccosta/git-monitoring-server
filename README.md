@@ -1,6 +1,9 @@
 # git-monitoring-server
 
 ## Architecture diagrams
+There are three parts to this project's architecture: the Git CLI application, the web server application, and the provisioning of both applications and infrastructure surrounding them.
+
+I have chosen to use Python since it would allow me to quickly iterate on both applications, and it is easy to dockerise.
 
 ### Git CLI
 The first part of the challenge consists of implementing a cli wrapper for `git log` functionality.
@@ -13,11 +16,14 @@ The implementation details are on the [next section](###GitCLI).
 By leveraging this cli wrapper, the server is then just another thin layer that models the retrieved data. Any commit will belong to a project with a given name and url. Therefore, we must be able to model this concept through Project and Commit classes respectively.
 
 #### Adding a project
+<details>
+
 As such, when we ask for the commits of a given project, we must create a Commit per git log result, and store it within a Project class. Once we are done, we return success (or failure) from the server side with an HTTP code.
 ![add](static/add.png)
+</details>
 
 #### Instrumenting and add request
-
+<details>
 Since we are handling HTTP requests, we must instrument how many requests is our server receiving, and how long is it taking to dispatch them. Prometheus is a time series based, metrics aggregating service that lets us record and plot that information. 
 For this to happen, we need to attach some method callbacks so that when our HTTP requests are received, and our responses returned, we record the appropriate metrics.
 This is done when the python server is first launched.
@@ -29,7 +35,11 @@ The following image shows the end to end server process of adding a project, aft
 ![add_metrics](static/add_metrics.png)
 
 The implementation details are on the [next section](##Web%20Server).
+</details>
+
+
 #### Listing a project
+<details>
 The only thing left to do is to view a given project that has been added.
 This can be done as html text or JSON. There are [two server endpoints](##Web%20Server) that do this respectively.
 
@@ -38,16 +48,17 @@ What the server does is look at it's internal Project dictionary. If a project w
 If the project is not found internally, the server returns an HTTP 404, while displaying an error page. 
 
 This means that the information we are listing back to the user will be a cached version of the repository `git log`. If the user wants to refresh this information, [the project needs to be added again](####%20Adding%20a%20project).
+</details>
 
 #### The full picture
 This image displays all of the non-infrastructural parts (i.e. application code) involved in the project:
 ![full](static/full.png)
 
-
-
 ### Provisioning
-
+Other than the application code, there is the infrastructure surrounding the web server that supports metric scraping and displaying.
+All of the infrastructure is terraformed and dockerised. Additional files exist to support the infrastructure, such as a custom `prometheus.yml` and a grafana `dashboard.json`, which are also provisioned through `terraform`.
 ![terraform](static/provisioning.png)
+
 
 ## Requirements
 I have used Ubuntu 19.04LTS while developing this project.
@@ -59,7 +70,43 @@ You must install:
 * docker 18.09.6+
 * I had to follow [this post install checklist](https://docs.docker.com/install/linux/linux-postinstall/) to ensure that dockerd/docker service was running. After doing so, my `DOCKER_HOST` was pointing to `127.0.0.1:2375` which is the default docker host for terraform.
 
-## Structure
+First you must install all the required dependencies to be able to run this projec locally.
+```
+pip3 install -r requirements.txt
+```
+This should install everything you need for [GitCLI.py]() and [server.py]() to work.
+
+## Files and Modules
+<details><summary>Application code files</summary>
+
+* GitCLI.py - Command line wrapper for git operations.
+* GitCLITest.py - Unit tests for GitCLI.py.
+* Commit.py - Data Transfer Object (DTO) which stores *hash, commiter name, date, and message* information.
+* Project.py - "Mediator" class between `Commit.py` and `GitCLI.py`. Creates commit objects by fetching the information through the cli, and stores them in a dictionary.
+* ProjectTest.py - Unit tests for Project.py.
+* server.py - Stateful object that receives requests, through different routes (see below). It holds a dictionary of Project objects, each object being created after being added to the server.
+* PrometheusMetrics.py - Helper class that records Prometheus metrics per request received by the server.
+* [requirements.txt]() - `pip3` list of dependencies for GitCLI.py and server.py.
+</details>
+<details><summary>Terraform files</summary>
+
+* [main.tf]() - Terraform file that creates all the necessary containers, connects Prometheus to Grafana as a data source, and provisions the Grafana dashboard.
+* [vars.tf]() - Defines port configurations and default docker host ip address.
+* [images.tf]() - Describes the docker images used by terraform.
+* [files.tf]() - Describes files that need to be provisioned into the containers.
+* * [prometheus.yml]() - Configuration override for the Prometheus docker container.
+* * [prometheus-dashboard-template1.json]() - Grafana dashboard json template.
+</details>
+
+<details><summary>Helper files</summary>
+
+* [deploy.sh]() - Convenience script to start the entire infrastructure.
+* [teardown.sh]() - Convenience script to destroy the entire infrastructure.
+* [testSuite.sh]() - Collection of operations on the server to automatically populate some data into the Grafana dashboards
+
+</details>
+
+<details><summary>File tree</summary>
 
 ```
 .
@@ -103,15 +150,10 @@ You must install:
 │   └── ProjectTest.py
 └── testSuite.sh
 ```
+</details>
 
 ## Implementation
 ### GitCLI
-
-First you must install all the required dependencies to be able to run this tool locally.
-```
-pip3 install -r requirements.txt
-```
-
 The command line tool allows you to get all the commit messages, in `pretty` format ([Git Docs](https://git-scm.com/book/en/v2/Git-Basics-Viewing-the-Commit-History)), given an http git repository url.
 You can use the GitCLI tool by running:
 ```
@@ -119,29 +161,17 @@ python3 src/GitCLI.py <http_git_repository_url>
 ```
 Essentially, what the tool does, is a shallow checkout of just the meta-data (.git folder) of the repository.
 It creates a shell subprocess, and does the checkout using `git clone -n <http_git_repository_url>`
-Then, changes to the checkout directory, running a `git log --pretty=format:"%h - %an, %ad : %s"` command.
-After collecting all the results (and printing them out), it cleans up after itself by deleting the checkout directory.
+Then, it changes to the checkout directory, running a `git log --pretty=format:"%h - %an, %ad : %s"` command.
+After printing and returning the results, it cleans up after itself by deleting the checkout directory.
 
 Naturally, the bigger the size of the repository meta-data (depending on the number of commits, tags, open branches, etc.), the longer the checkout time.
 
-I chose to use python since it would allow me to quickly iterate on both tests and source files. 
-
 ### Web Server
-
 I have used Python's [Flask](https://palletsprojects.com/p/flask/) module to create this web server.
-
-All of the dependencies are listed in the `requirements.txt` file.
 
 This web server is not tied up to any database for data persistence. This means that any stored information is ephemeral, and will be lost upon restarting the server docker container.
 
 Please note that the web-server is tied to the local `DOCKER_HOST` ip address and port, all of the following examples use `127.0.0.1` as the target public ip address. However, this can change depending on how your docker installation is setup (for instance, I have had different results with MacOS).
-
-#### Files and Modules
-* GitCLI.py - Command line wrapper for retrieving `git log info` (see above).
-* Commit.py - Data Transfer Object (DTO) which stores *hash, commiter name, date, and message* information.
-* Project.py - "Mediator" class between `Commit.py` and `GitCLI.py`. Creates commit objects by fetching the information through the cli, and stores them in a dictionary.
-* server.py - Stateful object that receives requests, through different routes (see below). It holds a dictionary of Project objects, each object being created after being added to the server.
-* PrometheusMetrics.py - Helper class that records Prometheus metrics per request received by the server.
 
 #### POST route
 ```
@@ -166,15 +196,18 @@ The `projectname` parameter has to match the name provided when running `/add/:p
 
 #### User Interface
 
-I have tried to create simple UI using [bootstrap](https://getbootstrap.com/), and Python's [Jinja2](http://jinja.pocoo.org/) for templating. From the UI, you should be able to see the results of a `/list/:projectname` and `/json/:projectname` in your browser.
+I have tried to create simple UI using [bootstrap](https://getbootstrap.com/), and Python's [Jinja2](http://jinja.pocoo.org/) for templating. From the UI, you should be able to see the results of a `/list/:projectname` and `/json/:projectname` in your browser. The templates used are located under the `templates` folder.
 
 The following images display the results of both `/list` and `/json` requests from a browser for a project names [`spark`](https://github.com/apache/spark).
+<details>
+<summary>User Interface Screenshots</summary>
 
 ![list results](static/list.png)
 
 ![json results](static/json.png)
 
-The templates used are all located under the `templates` folder.
+</details>
+
 
 #### Prometheus metrics
 
@@ -189,6 +222,9 @@ I provide a `prometheus.yml` config file, which is passed onto the Prometheus co
 ### Dockerfile
 
 I simply created a docker image that which runs python 3 but installs my `requirements.txt` through `pip3`. After that, I expose a port which is provided as a parameter to listen for the server requests.
+
+<details><summary>Dockerfile</summary>
+
 ```
 FROM python:3
 WORKDIR /usr/src/app
@@ -200,6 +236,9 @@ RUN echo $port
 EXPOSE $port
 CMD ["python3", "./server.py"]
 ```
+</details>
+
+
 ### Terraform
 #### What is provisioned
 Every piece is provision through terraform using docker containers and other types of resources:
@@ -250,14 +289,23 @@ The following dashboard and panels are provisioned through terraform by passing 
 ![dashboards](static/grafana.png)
 The image does not do justice to visualising spikes in request latency.😇️
 
-The image on the left shows the count for each request endpoint (add|list|json), where the queries are:
+I have composed the queries used thanks to the [Prometheus official documentation on Histograms](https://prometheus.io/docs/practices/histograms/). 
+
+The image on the left shows the count for each request endpoint (add|list|json), whereas  on the right we see the average request duration (latency) for each endpoint (add|list|json).
+<details><summary>request_count queries</summary>
+
 ```
 sum(request_count_total{endpoint=~"/add/.+"})
 sum(request_count_total{endpoint=~"/list/.+"})
 sum(request_count_total{endpoint=~"/json/.+"})
 ```
 
-The image on the right shows the average request duration (latency) for each endpoint (add|list|json), where the queries are:
+</details>
+
+
+
+<details><summary>request_latency queries</summary>
+
 ```
 sum(rate(request_latency_seconds_sum{endpoint!~"/metrics|/static/.+"}[5m])) / 
   sum(rate(request_latency_seconds_count{endpoint!~"/metrics|/static/.+"}[5m]))
@@ -271,7 +319,8 @@ sum(rate(request_latency_seconds_sum{endpoint=~"/list/.+"}[5m])) /
 sum(rate(request_latency_seconds_sum{endpoint=~"/json/.+"}[5m])) / 
   sum(rate(request_latency_seconds_count{endpoint=~"/json/.+"}[5m]))
 ```
-I have composed these queries thanks to the [Prometheus official documentation on Histograms](https://prometheus.io/docs/practices/histograms/). 
+</details>
+
 
 ## Where to go next
 The following points explain potential areas where I could continue working on this project.
