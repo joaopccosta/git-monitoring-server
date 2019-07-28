@@ -12,8 +12,11 @@ The implementation details are on the [next section](###GitCLI).
 ### Web Server
 By leveraging this cli wrapper, the server is then just another thin layer that models the retrieved data. Any commit will belong to a project with a given name and url. Therefore, we must be able to model this concept through Project and Commit classes respectively.
 
+#### Adding a project
 As such, when we ask for the commits of a given project, we must create a Commit per git log result, and store it within a Project class. Once we are done, we return success (or failure) from the server side with an HTTP code.
 ![add](static/add.png)
+
+#### Instrumenting and add request
 
 Since we are handling HTTP requests, we must instrument how many requests is our server receiving, and how long is it taking to dispatch them. Prometheus is a time series based, metrics aggregating service that lets us record and plot that information. 
 For this to happen, we need to attach some method callbacks so that when our HTTP requests are received, and our responses returned, we record the appropriate metrics.
@@ -21,15 +24,26 @@ This is done when the python server is first launched.
 ![start](static/start.png)
 Prometheus will later on contact our server at given intervals, on a specific route, to scrape the [recorded metrics](####Prometheus%20Metrics).
 
-
-
+Now that we have metrics instrumentation attached to our HTTP requests and responses, when we ask the server to add a project (or do any other request), the handlers implemented in PrometheusMetrics will do just that.
+The following image shows the end to end server process of adding a project, after it has been launched:
 ![add_metrics](static/add_metrics.png)
 
-![list](static/listapi.png)
+The implementation details are on the [next section](##Web%20Server).
+#### Listing a project
+The only thing left to do is to view a given project that has been added.
+This can be done as html text or JSON. There are [two server endpoints](##Web%20Server) that do this respectively.
 
+What the server does is look at it's internal Project dictionary. If a project with the same name exists, it returns the stored information. 
+![list](static/listapi.png)
+If the project is not found internally, the server returns an HTTP 404, while displaying an error page. 
+
+This means that the information we are listing back to the user will be a cached version of the repository `git log`. If the user wants to refresh this information, [the project needs to be added again](####%20Adding%20a%20project).
+
+#### The full picture
+This image displays all of the non-infrastructural parts (i.e. application code) involved in the project:
 ![full](static/full.png)
 
-The implementation details are on the [next section](##Web%20Server).
+
 
 ### Provisioning
 
