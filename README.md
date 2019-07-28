@@ -276,21 +276,44 @@ As such, I do a text replacement on this file, replacing a `server-ip` token wit
 
 #### Test Suite
 
-I provide a `testSuite.py` file that performs a series of operations on the web-server, just for convenience. It does not do anything clever.
-It uses three different repository URLs, with different commit list sizes:
+I provide a `testSuite.py` file that performs a series of operations on the web-server, just for convenience, so that I could populate data onto `grafana` without tending to the computer, mimmicking what could happen in real life. 
+
+The script uses three different repository URLs, with different commit list sizes:
 * joaopccosta/effective-bassoon - 2 commits
 * chrislgarry/Apollo-11 - 308 commits
 * apache/spark - 24,788 commits
 
 It runs *n* operations, provided as the first argument on the command line, waiting for *[1s, 60s]* between operations at random. The operations are random in terms of web server route *(add|list|json)*, and in terms of the repositories mentioned above.
 
+
+
 The following command will perform 300 random operations:
 ```
 python3 testSuite.py 300
 
 ```
+<details><summary>Sample output</summary>
 
-This was written so I could populate grafana in an automated way.
+```
+/usr/bin/python3.7 /home/joaopccosta/repositories/git-monitoring/testSuite.py 300
+ Performing 300 operations...
+Running ['curl', '-s', 'http://127.0.0.1:5000/json/effective-bassoon']
+Sleeping for 55s...
+Running ['curl', '-s', 'http://127.0.0.1:5000/list/effective-bassoon']
+Sleeping for 8s...
+Running ['curl', '-s', 'http://127.0.0.1:5000/list/Apollo-11']
+Sleeping for 31s...
+Running ['curl', '-s', 'http://127.0.0.1:5000/list/spark']
+Sleeping for 51s...
+Running ['curl', '-s', '-X', 'POST', 'http://127.0.0.1:5000/add/effective-bassoon', '-d', 'https://github.com/joaopccosta/effective-bassoon.git']
+Sleeping for 32s...
+Running ['curl', '-s', 'http://127.0.0.1:5000/list/effective-bassoon']
+Sleeping for 28s...
+Running ['curl', '-s', '-X', 'POST', 'http://127.0.0.1:5000/add/spark', '-d', 'https://github.com/apache/spark.git']
+...
+```
+
+</details>
 
 ### Grafana
 
