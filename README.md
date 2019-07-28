@@ -1,6 +1,49 @@
 # git-monitoring-server
-## Architecture diagram
-![architecture](static/architecture.png)
+
+## Architecture diagrams
+
+### Git CLI
+The first part of the challenge consists of implementing a cli wrapper for `git log` functionality.
+That can be done with just one class, invoking two standard git cli commands without resorting to any web API.
+![GitCLI](static/gitcli.png)
+Given an HTTP/HTTPS git repository url, the tool returns a list containing relevant git log information such as the hash, author name, date, and message of the retrieved commits.
+The implementation details are on the [next section](###GitCLI).
+
+### Web Server
+By leveraging this cli wrapper, the server is then just another thin layer that models the retrieved data. Any commit will belong to a project with a given name and url. Therefore, we must be able to model this concept through Project and Commit classes respectively.
+
+As such, when we ask for the commits of a given project, we must create a Commit per git log result, and store it within a Project class. Once we are done, we return success (or failure) from the server side with an HTTP code.
+![add](static/add.png)
+
+Since we are handling HTTP requests, we must instrument how many requests is our server receiving, and how long is it taking to dispatch them. Prometheus is a time series based, metrics aggregating service that lets us record and plot that information. 
+For this to happen, we need to attach some method callbacks so that when our HTTP requests are received, and our responses returned, we record the appropriate metrics.
+This is done when the python server is first launched.
+![start](static/start.png)
+Prometheus will later on contact our server at given intervals, on a specific route, to scrape the [recorded metrics](####Prometheus%20Metrics).
+
+
+
+![add_metrics](static/add_metrics.png)
+
+![list](static/listapi.png)
+
+![full](static/full.png)
+
+The implementation details are on the [next section](##Web%20Server).
+
+### Provisioning
+
+![terraform](static/provisioning.png)
+
+## Requirements
+I have used Ubuntu 19.04LTS while developing this project.
+Therefore, any specific versions of tools used are tied to that particular operating system.
+You must install:
+* python 3.7.3
+* pip 18.1
+* terraform v0.12.5+
+* docker 18.09.6+
+* I had to follow [this post install checklist](https://docs.docker.com/install/linux/linux-postinstall/) to ensure that dockerd/docker service was running. After doing so, my `DOCKER_HOST` was pointing to `127.0.0.1:2375` which is the default docker host for terraform.
 
 ## Structure
 
@@ -47,17 +90,7 @@
 └── testSuite.sh
 ```
 
-## Requirements
-I have used Ubuntu 19.04LTS while developing this project.
-Therefore, any specific versions of tools used are tied to that particular operating system.
-You must install:
-* python 3.7.3
-* pip 18.1
-* terraform v0.12.5+
-* docker 18.09.6+
-* I had to follow [this post install checklist](https://docs.docker.com/install/linux/linux-postinstall/) to ensure that dockerd/docker service was running. After doing so, my `DOCKER_HOST` was pointing to `127.0.0.1:2375` which is the default docker host for terraform.
-
-## Components
+## Implementation
 ### GitCLI
 
 First you must install all the required dependencies to be able to run this tool locally.
@@ -71,8 +104,8 @@ You can use the GitCLI tool by running:
 python3 src/GitCLI.py <http_git_repository_url>
 ```
 Essentially, what the tool does, is a shallow checkout of just the meta-data (.git folder) of the repository.
-It creates a subprocess, and does the checkout using `git clone -n <http_git_repository_url>`
-Then, changes to the checkout directory, running a `git log` command.
+It creates a shell subprocess, and does the checkout using `git clone -n <http_git_repository_url>`
+Then, changes to the checkout directory, running a `git log --pretty=format:"%h - %an, %ad : %s"` command.
 After collecting all the results (and printing them out), it cleans up after itself by deleting the checkout directory.
 
 Naturally, the bigger the size of the repository meta-data (depending on the number of commits, tags, open branches, etc.), the longer the checkout time.
