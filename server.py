@@ -28,17 +28,17 @@ def addProject(name):
 @app.route("/list/<name>")
 def listProject(name):
     if name not in projects:
-        return render_template('error.html', projectname=name)
+        return render_template('error.html', projectname=name), 404
     else:
-        return render_template('commits.html', projectname=name, commits=projects[name].commits.values())
+        return render_template('commits.html', projectname=name, commits=projects[name].commits.values()), 200
 
 
 @app.route("/json/<name>")
 def listProjectAsJson(name):
     if name not in projects:
-        return render_template('error.html', projectname=name)
+        return render_template('error.html', projectname=name), 404
     else:
-        return render_template('json.html', projectname=name, json=projects[name].toJson())
+        return render_template('json.html', projectname=name, json=projects[name].toJson()), 200
 
 @app.route('/metrics')
 def metrics():
