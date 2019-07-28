@@ -20,6 +20,7 @@
   "panels": [
     {
       "aliasColors": {
+        "/json": "blue",
         "Error": "red"
       },
       "bars": false,
@@ -28,7 +29,7 @@
       "datasource": "prometheus-source",
       "fill": 1,
       "gridPos": {
-        "h": 17,
+        "h": 9,
         "w": 12,
         "x": 0,
         "y": 0
@@ -125,7 +126,10 @@
     },
     {
       "aliasColors": {
-        "json": "orange"
+        "add": "green",
+        "avg": "purple",
+        "json": "blue",
+        "list": "yellow"
       },
       "bars": false,
       "dashLength": 10,
@@ -243,6 +247,113 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "aliasColors": {
+        "/json": "red",
+        "/list": "yellow",
+        "Error": "red"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "prometheus-source",
+      "fill": 1,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      },
+      "id": 10,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {},
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": true,
+      "targets": [
+        {
+          "expr": "sum(request_count_total{endpoint=~\"/add/.+\", http_status!=\"200\"})",
+          "format": "time_series",
+          "hide": false,
+          "intervalFactor": 1,
+          "legendFormat": "/add",
+          "refId": "D"
+        },
+        {
+          "expr": "sum(request_count_total{endpoint=~\"/list/.+\", http_status!=\"200\"})",
+          "format": "time_series",
+          "hide": false,
+          "intervalFactor": 1,
+          "legendFormat": "/list",
+          "refId": "E"
+        },
+        {
+          "expr": "sum(request_count_total{endpoint=~\"/json/.+\", http_status!=\"200\"})",
+          "format": "time_series",
+          "hide": false,
+          "intervalFactor": 1,
+          "legendFormat": "/json",
+          "refId": "F"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "failed requests",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
   "refresh": "5s",
@@ -253,7 +364,7 @@
     "list": []
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
@@ -283,6 +394,6 @@
   },
   "timezone": "",
   "title": "prometheus dashboard",
-  "uid": "UJ1L4CNZk",
-  "version": 6
+  "uid": "spvZXqNWz",
+  "version": 2
 }
