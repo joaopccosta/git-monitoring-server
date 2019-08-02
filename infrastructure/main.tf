@@ -42,8 +42,10 @@ resource "grafana_data_source" "prometheus" {
   type = "prometheus"
   name = "prometheus-source"
   url = "http://${docker_container.prometheus.ip_address}:${var.prometheusport}/"
+  depends_on = [docker_container.grafana, docker_container.prometheus]
 }
 
 resource "grafana_dashboard" "metrics1" {
   config_json = data.local_file.prometheus-dashboard-1.content
+  depends_on = [grafana_data_source.prometheus]
 }
