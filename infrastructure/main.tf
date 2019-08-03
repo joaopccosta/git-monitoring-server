@@ -1,5 +1,5 @@
 provider "docker" {
-  host = "tcp://${var.dockerhost_address}:${var.dockerhost_port}"
+  host = var.dockerhost_address
 }
 
 resource "docker_container" "prometheus" {

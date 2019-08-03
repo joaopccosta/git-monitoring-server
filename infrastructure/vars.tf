@@ -1,10 +1,7 @@
 variable "dockerhost_address" {
-  default = "127.0.0.1"
+  default = "unix:///var/run/docker.sock"
 }
 
-variable "dockerhost_port" {
-  default = 2375
-}
 variable "serverport" {
   default = 5000
 }
