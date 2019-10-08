@@ -24,21 +24,21 @@ class Project:
                 for commitInformation in rawCommits:
                     commitNumber += 1
                     splitCommitInfo = list(filter(None, re.compile(GIT_LOG_REGEX).split(commitInformation)))
-                    hash = splitCommitInfo[0]
+                    commitHash = splitCommitInfo[0]
                     author = splitCommitInfo[1]
                     date = splitCommitInfo[2]
                     message = splitCommitInfo[3]
-                    self.addCommit(hash, author, date, message)
+                    self.addCommit(commitHash, author, date, message)
         except IndexError as indexOutOfRangeException:
             sys.stderr.write(f"REGEX PROBLEM FOR {splitCommitInfo} in index {commitNumber}")
             raise indexOutOfRangeException
         except Exception as exception:
             raise exception
 
-    def addCommit(self, hash, author, date, message):
-        commit = Commit(hash, author, date, message)
-        print(f"Adding commit for {self.name} - {hash} - {author} {date} : {message}")
-        self.commits[hash] = commit
+    def addCommit(self, commitHash, author, date, message):
+        commit = Commit(commitHash, author, date, message)
+        print(f"Adding commit for {self.name} - {commitHash} - {author} {date} : {message}")
+        self.commits[commitHash] = commit
 
     def toJson(self):
         data = {}
