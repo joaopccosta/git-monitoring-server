@@ -13,7 +13,6 @@ class GitCLI:
         output = subprocess.run (GIT_LOG_COMMAND, stdout=subprocess.PIPE, cwd=f"./{name}")
         gitLogRestuls = str(output.stdout.decode(UTF_ENCONDING)).replace("\"", "").split("\n")
         subprocess.run(RM_FOLDER_COMMAND+[name])
-
         print(f"{gitLogRestuls}")
         return gitLogRestuls
 
