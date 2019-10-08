@@ -22,7 +22,7 @@ def addProject(name):
         project.fetchCommits()
         projects[name] = project
         return "200"
-    except Exception as exception:
+    except Exception:
         abort(500)
 
 @app.route("/list/<name>")
