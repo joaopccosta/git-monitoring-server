@@ -2,8 +2,8 @@ import json
 
 class Commit:
 
-    def __init__(self, hash, author, date, message):
-        self.commitHash = hash
+    def __init__(self, commitHash, author, date, message):
+        self.commitHash = commitHash
         self.author = author
         self.date = date
         self.message = message
