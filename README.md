@@ -40,7 +40,6 @@ The following image shows the end to end server process of adding a project, aft
 The implementation details are on the [next section](##Web%20Server).
 </details>
 
-
 #### Listing a project
 <details>
 
@@ -63,7 +62,6 @@ Other than the application code, there is the infrastructure surrounding the web
 All of the infrastructure is terraformed and dockerised. Additional files exist to support the infrastructure, such as a custom `prometheus.yml` and a `grafana-dashboard.json`, which are also provisioned through `terraform`.
 ![terraform](static/provisioning.png)
 
-
 ## Requirements
 I have used Ubuntu 19.04LTS while developing this project.
 Therefore, any specific versions of tools used are tied to that particular operating system.
@@ -83,30 +81,30 @@ This should install everything you need for [GitCLI.py]() and [server.py]() to w
 ## Files and Modules
 <details><summary>Application code files</summary>
 
-* [GitCLI.py]() - Command line wrapper for git operations.
-* [GitCLITest.py]() - Unit tests for GitCLI.py.
-* [Commit.py]() - Data Transfer Object (DTO) which stores *hash, commiter name, date, and message* information.
-* [Project.py]() - Mediator class between [Commit.py]() and [GitCLI.py](). Creates commit objects by fetching the information through the CLI, and stores them in a dictionary.
-* [ProjectTest.py]() - Unit tests for Project.py.
-* server.py - Stateful object that receives requests, through different routes (see below). It holds a dictionary of Project objects, each object being created after being added to the server.
-* [PrometheusMetrics.py]() - Helper class that records `prometheus` metrics per request received by the server.
-* [requirements.txt]() - `pip3` list of dependencies for GitCLI.py and server.py.
+  * [GitCLI.py]() - Command line wrapper for git operations.
+  * [GitCLITest.py]() - Unit tests for GitCLI.py.
+  * [Commit.py]() - Data Transfer Object (DTO) which stores *hash, commiter name, date, and message* information.
+  * [Project.py]() - Mediator class between [Commit.py]() and [GitCLI.py](). Creates commit objects by fetching the information through the CLI, and stores them in a dictionary.
+  * [ProjectTest.py]() - Unit tests for Project.py.
+  * server.py - Stateful object that receives requests, through different routes (see below). It holds a dictionary of Project objects, each object being created after being added to the server.
+  * [PrometheusMetrics.py]() - Helper class that records `prometheus` metrics per request received by the server.
+  * [requirements.txt]() - `pip3` list of dependencies for GitCLI.py and server.py.
 </details>
 <details><summary>Terraform files</summary>
 
-* [main.tf]() - `terraform` file that creates all the necessary containers, connects `prometheus` to `grafana` as a data source, and provisions the `grafana` dashboard.
-* [vars.tf]() - Defines port configurations and default docker host ip address.
-* [images.tf]() - Describes the docker images used by `terraform`.
-* [files.tf]() - Describes files that need to be provisioned into the containers.
-* * [prometheus.yml]() - Configuration override for the `prometheus` docker container.
-* * [prometheus-dashboard-template1.json]() - `grafana` dashboard json template.
+  * [main.tf]() - `terraform` file that creates all the necessary containers, connects `prometheus` to `grafana` as a data source, and provisions the `grafana` dashboard.
+  * [vars.tf]() - Defines port configurations and default docker host ip address.
+  * [images.tf]() - Describes the docker images used by `terraform`.
+  * [files.tf]() - Describes files that need to be provisioned into the containers.
+  * * [prometheus.yml]() - Configuration override for the `prometheus` docker container.
+  * * [prometheus-dashboard-template1.json]() - `grafana` dashboard json template.
 </details>
 
 <details><summary>Helper files</summary>
 
-* [deploy.sh]() - Convenience script to start the entire infrastructure.
-* [teardown.sh]() - Convenience script to destroy the entire infrastructure.
-* [testSuite.py]() - Scripted operations which will automatically populate some data into the `grafana` dashboards. More details in the [next section](###Test%20Suite).
+  * [deploy.sh]() - Convenience script to start the entire infrastructure.
+  * [teardown.sh]() - Convenience script to destroy the entire infrastructure.
+  * [testSuite.py]() - Scripted operations which will automatically populate some data into the `grafana` dashboards. More details in the [next section](###Test%20Suite).
 </details>
 
 <details><summary>File tree</summary>
