@@ -1,5 +1,7 @@
 # git-monitoring-server
 
+
+
 ## Architecture diagrams
 There are three parts to this project's architecture: the Git Command Line Interface (CLI) application, the web server application, and the provisioning of both applications and infrastructure surrounding them.
 
