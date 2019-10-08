@@ -17,7 +17,7 @@ class GitCLI:
         print(f"{gitLogRestuls}")
         return gitLogRestuls
 
-def getProjectNameFromURL(self, url):
+def getProjectNameFromURL(url):
     name = str(url).rsplit("/",1)[1].split(".")[0]
     return name
 
