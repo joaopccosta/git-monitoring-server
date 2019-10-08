@@ -8,7 +8,7 @@ UTF_ENCONDING = "utf-8"
 
 class GitCLI:
     def fetchCommits(self, url):
-        name = self.getProjectNameFromURL(url)
+        name = getProjectNameFromURL(url)
         subprocess.run(GIT_CLONE_COMMMAND+[url])
         output = subprocess.run (GIT_LOG_COMMAND, stdout=subprocess.PIPE, cwd=f"./{name}")
         gitLogRestuls = str(output.stdout.decode(UTF_ENCONDING)).replace("\"", "").split("\n")
@@ -17,9 +17,9 @@ class GitCLI:
         print(f"{gitLogRestuls}")
         return gitLogRestuls
 
-    def getProjectNameFromURL(self, url):
-        name = str(url).rsplit("/",1)[1].split(".")[0]
-        return name
+def getProjectNameFromURL(self, url):
+    name = str(url).rsplit("/",1)[1].split(".")[0]
+    return name
 
 if __name__ == '__main__':
     gitCLI = GitCLI()
