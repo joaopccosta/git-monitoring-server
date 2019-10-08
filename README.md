@@ -67,9 +67,13 @@ I have used Ubuntu 19.04LTS while developing this project.
 Therefore, any specific versions of tools used are tied to that particular operating system.
 You must install:
   * python 3.7.3
+
   * pip 18.1
+
   * terraform v0.12.5+
+
   * docker 18.09.6+
+
   * I had to follow [this Linux post install checklist](https://docs.docker.com/install/linux/linux-postinstall/) to ensure that `dockerd` was running. After doing so, my `DOCKER_HOST` was pointing to `127.0.0.1:2375` which is my default docker host address for `terraform`. If you are using anything other than Linux, please ensure that `dockerd` is running and configure `terraform` accordingly via `TF_VARS`.
 
 First you must install all the required dependencies to be able to run this project locally.
@@ -82,13 +86,21 @@ This should install everything you need for [GitCLI.py]() and [server.py]() to w
 <details><summary>Application code files</summary>
 
   * [GitCLI.py]() - Command line wrapper for git operations.
+
   * [GitCLITest.py]() - Unit tests for GitCLI.py.
+
   * [Commit.py]() - Data Transfer Object (DTO) which stores *hash, commiter name, date, and message* information.
+
   * [Project.py]() - Mediator class between [Commit.py]() and [GitCLI.py](). Creates commit objects by fetching the information through the CLI, and stores them in a dictionary.
+
   * [ProjectTest.py]() - Unit tests for Project.py.
-  * server.py - Stateful object that receives requests, through different routes (see below). It holds a dictionary of Project objects, each object being created after being added to the server.
+
+  * [server.py]() - Stateful object that receives requests, through different routes (see below). It holds a dictionary of Project objects, each object being created after being added to the server.
+
   * [PrometheusMetrics.py]() - Helper class that records `prometheus` metrics per request received by the server.
+
   * [requirements.txt]() - `pip3` list of dependencies for GitCLI.py and server.py.
+  
 </details>
 <details><summary>Terraform files</summary>
 
