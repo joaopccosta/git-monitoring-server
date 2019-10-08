@@ -66,15 +66,15 @@ All of the infrastructure is terraformed and dockerised. Additional files exist 
 I have used Ubuntu 19.04LTS while developing this project.
 Therefore, any specific versions of tools used are tied to that particular operating system.
 You must install:
-  * python 3.7.3
+* python 3.7.3
 
-  * pip 18.1
+* pip 18.1
 
-  * terraform v0.12.5+
+* terraform v0.12.5+
 
-  * docker 18.09.6+
+* docker 18.09.6+
 
-  * I had to follow [this Linux post install checklist](https://docs.docker.com/install/linux/linux-postinstall/) to ensure that `dockerd` was running. After doing so, my `DOCKER_HOST` was pointing to `127.0.0.1:2375` which is my default docker host address for `terraform`. If you are using anything other than Linux, please ensure that `dockerd` is running and configure `terraform` accordingly via `TF_VARS`.
+* I had to follow [this Linux post install checklist](https://docs.docker.com/install/linux/linux-postinstall/) to ensure that `dockerd` was running. After doing so, my `DOCKER_HOST` was pointing to `127.0.0.1:2375` which is my default docker host address for `terraform`. If you are using anything other than Linux, please ensure that `dockerd` is running and configure `terraform` accordingly via `TF_VARS`.
 
 First you must install all the required dependencies to be able to run this project locally.
 ```
@@ -100,7 +100,7 @@ This should install everything you need for [GitCLI.py]() and [server.py]() to w
   * [PrometheusMetrics.py]() - Helper class that records `prometheus` metrics per request received by the server.
 
   * [requirements.txt]() - `pip3` list of dependencies for GitCLI.py and server.py.
-  
+
 </details>
 <details><summary>Terraform files</summary>
 
