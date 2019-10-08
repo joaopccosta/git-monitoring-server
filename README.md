@@ -1,6 +1,8 @@
 # git-monitoring-server
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/9963d44a27da4e99a929c9bbd33c8db6)](https://www.codacy.com/manual/joaopccosta/git-monitoring-server?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=joaopccosta/git-monitoring-server&amp;utm_campaign=Badge_Grade)
 
+
+
 ## Architecture diagrams
 There are three parts to this project's architecture: the Git Command Line Interface (CLI) application, the web server application, and the provisioning of both applications and infrastructure surrounding them.
 
